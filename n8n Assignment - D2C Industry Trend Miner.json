@@ -1,0 +1,936 @@
+{
+  "name": "n8n Assignment - D2C Industry Trend Miner",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://newsapi.org/v2/everything?q=D2C+India+trends&from={{$moment().subtract(7, 'days').format('YYYY-MM-DD')}}&to={{$moment().format('YYYY-MM-DD')}}&sortBy=publishedAt",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -768,
+        0
+      ],
+      "id": "3b51c362-765f-4387-99ad-97939ec59a56",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "OvjjxYLNCOSaGHXo",
+          "name": "Unnamed credential"
+        },
+        "httpQueryAuth": {
+          "id": "N1Rv8WQLge8UZnJI",
+          "name": "Query Auth account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "articles",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -544,
+        -16
+      ],
+      "id": "d4673e07-8b77-4bf9-a1d1-ee68e4183b2c",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "content": "={{ $json.title }}",
+        "options": {}
+      },
+      "name": "Google Cloud Natural Language",
+      "type": "n8n-nodes-base.googleCloudNaturalLanguage",
+      "position": [
+        -288,
+        -144
+      ],
+      "typeVersion": 1,
+      "id": "3d96db40-00c9-4c46-82de-88a9e8f98824",
+      "credentials": {
+        "googleCloudNaturalLanguageOAuth2Api": {
+          "id": "94YORLpBRDzHiMhi",
+          "name": "Google Cloud Natural Language account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "values": {
+          "number": [
+            {
+              "name": "score",
+              "value": "={{$json[\"documentSentiment\"][\"score\"]}}"
+            },
+            {
+              "name": "magnitude",
+              "value": "={{$json[\"documentSentiment\"][\"magnitude\"]}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Set",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -64,
+        -144
+      ],
+      "typeVersion": 1,
+      "id": "63c64985-c0f6-42cd-b04f-3056b5b2950a"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        352,
+        -32
+      ],
+      "id": "1e83ab34-7ef5-4324-9997-c1b1e33ce2f9",
+      "name": "Merge",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "content": "## Scrape latest D2c Data from Multiple Sources",
+        "height": 286,
+        "width": 1248
+      },
+      "id": "db12c466-d61c-44e0-9d87-af0f164f587d",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2736,
+        592
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "url": "https://api.twitter.com/2/tweets/search/recent",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "D2C Trends"
+            },
+            {
+              "name": "max_results",
+              "value": "10"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer AAAAAAAAAAAAAAAAAAAAAGMh4QEAAAAApAvDFjesiQIy60X17EvaJd23TpY%3DTph1cP1UXI8u4cfEE4z6zPtt2iyZLboMgLmj5uhYd2sgvNYmyP"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -752,
+        400
+      ],
+      "id": "7c97722c-bb30-4400-b26e-cdad66b77df2",
+      "name": "HTTP Request1",
+      "executeOnce": false,
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "command": "cd /Users/krishnakumar/Code/d2c\nchmod +x run.sh\n./run.sh deps\n./run.sh start "
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        -768,
+        784
+      ],
+      "id": "a25bac38-4823-44ec-b319-1f67730a0672",
+      "name": "Execute Command",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1248,
+        416
+      ],
+      "id": "2ccd6ca3-ffda-4772-8bc8-d3af77277ed3",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        400
+      ],
+      "id": "99e9aadd-ec4a-4ff5-a5b1-7e308c81935f",
+      "name": "Split Out2"
+    },
+    {
+      "parameters": {
+        "values": {
+          "number": [
+            {
+              "name": "score",
+              "value": "={{$json[\"documentSentiment\"][\"score\"]}}"
+            },
+            {
+              "name": "magnitude",
+              "value": "={{$json[\"documentSentiment\"][\"magnitude\"]}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Set1",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -48,
+        256
+      ],
+      "typeVersion": 1,
+      "id": "d1238539-f448-4458-83f6-a43f3f77938e"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        352,
+        384
+      ],
+      "id": "8c07815a-486c-433f-9171-1b872d6e1c87",
+      "name": "Merge2",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "content": "={{ $json.text }}",
+        "options": {}
+      },
+      "name": "Analyze sentiment",
+      "type": "n8n-nodes-base.googleCloudNaturalLanguage",
+      "position": [
+        -288,
+        256
+      ],
+      "typeVersion": 1,
+      "id": "aae7dac8-a178-4d61-9437-2c1142eefac9",
+      "alwaysOutputData": false,
+      "executeOnce": false,
+      "retryOnFail": true,
+      "maxTries": 2,
+      "credentials": {
+        "googleCloudNaturalLanguageOAuth2Api": {
+          "id": "94YORLpBRDzHiMhi",
+          "name": "Google Cloud Natural Language account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        880,
+        368
+      ],
+      "id": "58854204-85d2-4912-bb13-c0efa3163862",
+      "name": "Merge3",
+      "executeOnce": false,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "# Health\ncurl -sS http://127.0.0.1:8000/health | jq\n\n# List embedded sources\ncurl -sS http://127.0.0.1:8000/sources | jq\n\n# List sources from an external file\ncurl -sS --get 'http://127.0.0.1:8000/sources' \\\n  --data-urlencode \"file=/Users/krishnakumar/Downloads/urls.json\" | jq\n\n# Feed (embedded sources, defaults). Save to items.json\ncurl -sS -H 'Accept: application/json' \\\n  'http://127.0.0.1:8000/feed' -o items.json\n\n# Feed with knobs\ncurl -sS --get 'http://127.0.0.1:8000/feed' \\\n  --data-urlencode 'limit_per_source=50' \\\n  --data-urlencode 'concurrent=8' \\\n  --data-urlencode 'require_published=true' | jq '.count, .items[:3]'\n\n# Feed using external urls.json\ncurl -sS --get 'http://127.0.0.1:8000/feed' \\\n  --data-urlencode 'file=/Users/krishnakumar/Downloads/urls.json' \\\n  --data-urlencode 'limit_per_source=50' \\\n  --data-urlencode 'concurrent=8' \\\n  --data-urlencode 'require_published=true' -o items.json\n\n# Raw per-source debug (trims items per source)\ncurl -sS 'http://127.0.0.1:8000/trends?limit_per_source=10&concurrent=8' \\\n  | jq '.count, .results[0].parsed.items[:5]'\n",
+        "height": 944,
+        "width": 960
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2608,
+        -448
+      ],
+      "typeVersion": 1,
+      "id": "e8641c3d-5ae8-47b7-8cd6-0ac20fd81520",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "url": "http://127.0.0.1:8000/feed",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "limit_per_source",
+              "value": "50"
+            },
+            {
+              "name": "concurrent",
+              "value": "8"
+            },
+            {
+              "name": "require_published",
+              "value": "true"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9704fc2d-f47e-4498-a01b-b7d8ae1162e8",
+      "name": "Fetch Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -768,
+        944
+      ],
+      "typeVersion": 4.2,
+      "alwaysOutputData": false,
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "items",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -224,
+        832
+      ],
+      "id": "f2cc3519-c581-4b4e-b6c8-9e77cfc0c094",
+      "name": "Split Out3"
+    },
+    {
+      "parameters": {
+        "maxItems": 20
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        304,
+        720
+      ],
+      "id": "9d800d4e-5af9-4b4e-827d-3082fa693438",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "content": "\n# Twitter/ X ETL Pipeline\n",
+        "height": 336,
+        "width": 1312
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -832,
+        224
+      ],
+      "typeVersion": 1,
+      "id": "83079517-aedd-4149-97d5-d84d2f567fe1",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "\n# NEWS API ETL Pipeline\n",
+        "height": 336,
+        "width": 1312
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -832,
+        -192
+      ],
+      "typeVersion": 1,
+      "id": "4ea74350-110e-4f83-af98-1736d86d28e9",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "\n# Custom ETL Pipeline",
+        "height": 464,
+        "width": 1312
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -832,
+        640
+      ],
+      "typeVersion": 1,
+      "id": "ac9dc494-aa99-4294-995a-1c5fa55b91ea",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1280,
+        576
+      ],
+      "id": "b44edbf3-3b28-4015-b1e9-cf3bceeaf46c",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "A8FmFRx0OCZqWyjl",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Goal: From items published in the Last week days produce clear India D2C themes.\n\nProcess:\n\nPre-filter & dedupe\n\nKeep only items with publishedAt within Last week days and India/D2C context (brands, categories, markets, Tier-2/3 cities, ONDC, q-commerce, kirana, UPI, RBI, ecommerce).\n\nDedupe by canonicalized URL and normalized title.\n\nKeyword/entity extraction\n\nFrom titles, extract brands, categories, market terms, and Tier-2/3 city mentions.\n\nTheme proposal\n\nPropose concise names (2–6 words) with one-line descriptions.\n\nStart from seed_themes; refine/merge/split; keep names distinct and business-relevant.\n\nIf evidence exists, prefer a theme around Quick commerce adoption in Tier-2 India.\n\nAssignment & metrics\n\nAssign each item to one theme (if assignment_mode is \"single\") or 1..N themes (\"multi\") for counting.\n\nCompute volume = number of assigned items.\n\nCompute trajectory using H1 vs H2 counts within the window:\n\nH1 = first half of window; H2 = second half.\n\n\"rising\" if H2 ≥ 1.2 × H1; \"falling\" if H2 ≤ 0.8 × H1; else \"steady\".\n\nCompute tone = average headline sentiment in [-1,1] using a simple lexicon (positive: rise, growth, record, expand, funding, profit; negative: decline, fall, loss, slowdown, layoff, ban). Neutral if no hits. Round to 2 decimals.\n\nEvidence\n\nFor each theme, include up to 3 representative samples (title + source + url).\n\nConstraints:\n\nUse only items.\n\nReturn valid JSON matching the schema exactly. No extra fields. No markdown.\n\nInput:\nseed_themes = {{seed_themes_json|[\n{\"name\":\"Quick commerce adoption in Tier-2 India\",\"keywords\":[\"quick commerce\",\"Blinkit\",\"Zepto\",\"10-minute\",\"kirana\",\"dark store\",\"instant delivery\",\"hyperlocal\"]},\n{\"name\":\"Festival E-commerce Surge\",\"keywords\":[\"festive\",\"sale\",\"GMV\",\"ecommerce\",\"seasonal\",\"discounts\",\"mobile\",\"quick commerce\"]},\n{\"name\":\"ONDC & Logistics Rail\",\"keywords\":[\"ONDC\",\"logistics\",\"last-mile\",\"warehousing\",\"delivery\",\"3PL\"]},\n{\"name\":\"D2C Funding & M&A\",\"keywords\":[\"funding\",\"valuation\",\"IPO\",\"VC\",\"acquisition\",\"growth\"]},\n{\"name\":\"Beauty & Personal Care D2C\",\"keywords\":[\"beauty\",\"personal care\",\"skincare\",\"haircare\",\"ayurveda\",\"herbal\"]}\n]}}\n\nitems = \n\ndocumentSentiment: Magnitude:{{ $json.documentSentiment.magnitude }}  Score:{{ $json.documentSentiment.score }} \nlanguage: {{ $json.language }}\nsource: {{ $json.source.name }}\nauthor:{{ $json.author }}\ntitle: {{ $json.title }}\ndescription: {{ $json.description }}\nurl : {{ $json.url }}\nurlToImage : {{ $json.urlToImage }}\npublishedAt : {{ $json.publishedAt }}\ncontent : {{ $json.content }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=SYSTEM\n\nYou are an analyst who groups recent India D2C articles into coherent, business-meaningful themes. Work only with the provided items. Do not invent facts. Drop items that are outside the time window or not India/D2C-relevant. Output STRICT JSON only matching the schema. No prose.\n\nVARIABLES (inject via n8n expressions)\n\ncountry: {{country|India}}\nwindow_days: {{days|7}}\nmin_themes: {{min_themes|3}}\nmax_themes: {{max_themes|5}}\nsample_per_theme: {{sample_per_theme|3}}\nassignment_mode: {{assignment_mode|single}} # \"single\" or \"multi\"\nseed_themes: {{seed_themes_json|[\n{\"name\":\"Quick commerce adoption in Tier-2 India\",\"keywords\":[\"quick commerce\",\"Blinkit\",\"Zepto\",\"10-minute\",\"kirana\",\"dark store\",\"instant delivery\",\"hyperlocal\"]},\n{\"name\":\"Festival E-commerce Surge\",\"keywords\":[\"festive\",\"sale\",\"GMV\",\"ecommerce\",\"seasonal\",\"discounts\",\"mobile\",\"quick commerce\"]},\n{\"name\":\"ONDC & Logistics Rail\",\"keywords\":[\"ONDC\",\"logistics\",\"last-mile\",\"warehousing\",\"delivery\",\"3PL\"]},\n{\"name\":\"D2C Funding & M&A\",\"keywords\":[\"funding\",\"valuation\",\"IPO\",\"VC\",\"acquisition\",\"growth\"]},\n{\"name\":\"Beauty & Personal Care D2C\",\"keywords\":[\"beauty\",\"personal care\",\"skincare\",\"haircare\",\"ayurveda\",\"herbal\"]}\n]}}\nitems: \n# REQUIRED: [{\"title\":\"{{ $json.title }}\",\"source\":{{ $json.source.name }}{\"author\":\"{{ $json.author }}\"},\"url\":\"{{ $json.url }}\",\"publishedAt\":\"{{ $json.publishedAt }}\"}]",
+          "enableStreaming": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1280,
+        384
+      ],
+      "id": "c339c04b-f48e-48b4-b38d-15ef6b896194",
+      "name": "AI Agent2"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n\"themes\": [\n{\n\"name\": \"string\",\n\"description\": \"one line\",\n\"keywords\": [\"string\", \"...\"],\n\"volume\": 0,\n\"trajectory\": \"rising | steady | falling\",\n\"tone\": 0,\n\"samples\": [\n{\"title\":\"string\",\"source\":\"string\",\"url\":\"string\"},\n{\"title\":\"string\",\"source\":\"string\",\"url\":\"string\"},\n{\"title\":\"string\",\"source\":\"string\",\"url\":\"string\"}\n]\n}\n]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1424,
+        592
+      ],
+      "id": "01bbc564-16a4-406f-b058-301b5b3abc9d",
+      "name": "Structured Output Parser2"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.themes",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1616,
+        752
+      ],
+      "id": "6081e7e0-307f-4058-882b-01ea48d2f55c",
+      "name": "Split Out4"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Inputs:\n\n{{ $json.concatenated_output }}\n\nTask:\nWrite INSIGHTS.md ONLY (no JSON, no code blocks, no extra commentary). Use the data in themes_json and items_json without inventing anything.\n\nINSIGHTS.md must follow this structure:\n\n# D2C — Weekly Trend Insights (last 7 days)\n\nThemes: <Theme A> (rising), <Theme B> (steady), <Theme C> (falling)  \n→ This one-line summary must list the top 3–5 themes ranked by volume, with their trajectory in parentheses.\n\n## 1. <Theme Name> — <short one-line descriptor>\n- Why it matters now: <one-line explanation>\n- Key evidence (1–2 refs):\n  1. <Title> — <Source> — <URL>\n  2. <Title> — <Source> — <URL>\n- Top keywords: <comma-separated list, 5–8 tokens>\n- Stats: volume=<N>, trajectory=<rising|steady|falling>, tone=<rounded sentiment -1.00..+1.00>\n\n## 2. <Next Theme> — <descriptor>\n… repeat for 3–5 themes total.\n\nAfter the theme sections, add one short recommendation paragraph (2–3 sentences) for D2C founders or investors, based on the themes.\n\nConstraints:\n- Exactly 3–5 theme sections (pick the top ones by volume).\n- Each theme must include 1–2 sample references drawn from its samples field in themes_json.\n- Use trajectory values exactly as provided in themes_json.\n- Tone must be numeric between -1.00 and +1.00, rounded to 2 decimals.\n- Output ONLY valid Markdown as specified. No JSON, no extra prose.\n\nIf you cannot comply, output:\n\n# INSIGHTS UNAVAILABLE\n"
+            },
+            {
+              "content": "\nYou are an analyst. Create a single Markdown report called INSIGHTS.md.\n\nOutput shema to create the INSIGHTS.md.\n:-\n\n{\n  \"type\": \"object\",\n  \"required_fields\": [\n    \"title_line\",\n    \"one_line_summary\",\n    \"theme_sections_count\",\n    \"theme_sections\",\n    \"recommendation_paragraph\"\n  ],\n  \"checks\": {\n    \"title_line\": { \"must_match\": \"^# D2C — Weekly Trend Insights \\\\(last \\\\d+ days\\\\)$\" },\n    \"one_line_summary\": {\n      \"must_start_with\": \"Themes:\",\n      \"must_contain_parentheses_for_each_theme\": true\n    },\n    \"theme_sections_count\": { \"min\": 3, \"max\": 5 },\n    \"theme_section_structure\": {\n      \"heading_pattern\": \"^## \\\\d+\\\\. .+ — .+$\",\n      \"must_have\": [\n        \"Why it matters now:\",\n        \"Key evidence (1–2 refs):\",\n        \"Top keywords:\",\n        \"Stats: volume=\"\n      ]\n    },\n    \"evidence_refs\": { \"per_theme_min\": 1, \"per_theme_max\": 2, \"format\": \"Title — Source — URL\" },\n    \"tone_format\": { \"pattern\": \"tone=\\\\-?\\\\d+\\\\.\\\\d{2}\" },\n    \"trajectory_values\": [\"rising\",\"steady\",\"falling\"],\n    \"recommendation\": { \"min_sentences\": 2, \"max_sentences\": 3 }\n  }\n}\n",
+              "role": "system"
+            }
+          ]
+        },
+        "simplify": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        2288,
+        368
+      ],
+      "id": "995b460b-c500-4c7b-9ae2-397d0f4c6435",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "A8FmFRx0OCZqWyjl",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "toJson",
+        "options": {
+          "fileName": "Items.json"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1456,
+        1328
+      ],
+      "id": "04abc2c4-1b18-4506-bc8e-904c8a2eca65",
+      "name": "Items.json File Creator"
+    },
+    {
+      "parameters": {
+        "operation": "toJson",
+        "options": {
+          "fileName": "theme.json"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1744,
+        1328
+      ],
+      "id": "97bcf32f-4c67-4c33-b9e5-62999317a468",
+      "name": "Theme.json File Creator"
+    },
+    {
+      "parameters": {
+        "content": "# Deliverables",
+        "height": 336,
+        "width": 864
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1376,
+        1216
+      ],
+      "typeVersion": 1,
+      "id": "e6bb7d26-0340-4eef-8a09-a5984fcbd67c",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "['choices[0].message.content']",
+        "options": {
+          "fileName": "insight.md"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        2000,
+        1328
+      ],
+      "id": "68f3adbd-a8d4-4483-9c2e-0e81c9e2cba8",
+      "name": "Insight.md"
+    },
+    {
+      "parameters": {
+        "includeTime": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Include_Current_Time', ``, 'boolean') }}",
+        "outputFieldName": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Output_Field_Name', ``, 'string') }}",
+        "options": {
+          "timezone": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Timezone', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.dateTimeTool",
+      "typeVersion": 2,
+      "position": [
+        1360,
+        784
+      ],
+      "id": "3cf33dcd-e7c6-4663-811f-fd4a3b7d7cd8",
+      "name": "Date & Time"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "concatenate",
+              "field": "output",
+              "separateBy": ", "
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        1792,
+        464
+      ],
+      "id": "002322c2-ac3c-477e-8231-f0b5f655db30",
+      "name": "Summarize"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "choices[0].message.content",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2640,
+        384
+      ],
+      "id": "1dac5e42-e537-4093-a6bb-4c75b0471626",
+      "name": "Split Out1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Google Cloud Natural Language",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Google Cloud Natural Language": {
+      "main": [
+        [
+          {
+            "node": "Set",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Split Out2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Execute Command",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Command": {
+      "main": [
+        []
+      ]
+    },
+    "Split Out2": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Analyze sentiment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set1": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze sentiment": {
+      "main": [
+        [
+          {
+            "node": "Set1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge3": {
+      "main": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Items.json File Creator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Data": {
+      "main": [
+        [
+          {
+            "node": "Split Out3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out3": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent2": {
+      "main": [
+        [
+          {
+            "node": "Split Out4",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Summarize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser2": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out4": {
+      "main": [
+        [
+          {
+            "node": "Theme.json File Creator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Insight.md",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Kolkata",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "c4e05b1b-8613-4745-a203-9181683212c0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "788b18eb9ac1a7ceb7d683cee5472f26750c00e20ceacfd621598c4dedc45762"
+  },
+  "id": "SHrVHiSVS1nUPiSd",
+  "tags": []
+}
