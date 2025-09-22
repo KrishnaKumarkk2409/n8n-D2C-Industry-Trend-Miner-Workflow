@@ -11,8 +11,12 @@ This workflow automates the complete pipeline for D2C trend analysis:
 - **Output Generation**: Produces JSON files and Markdown reports
 
 ## 📹 Demo Video
+<video width="640" height="360" controls>
+  <source src="samplevideo.mov" type="video">
+  Your browser does not support the video tag.
+</video>
 
-[📺 Watch Workflow Demo](samplevideo.mov) *(Add your intro video file here)*
+
 
 ## 🏗️ Architecture
 
